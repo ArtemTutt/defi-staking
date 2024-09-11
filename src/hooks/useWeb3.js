@@ -50,6 +50,8 @@ export const useWeb3 = () => {
     const loadContractData = async () => {
         if (network) {
             const tetherData = await Tether.networks[network];
+            const rwdData = await RWD.networks[network];
+            const decentralBankData = await DB.networks[network];
             if (tetherData && tetherData.address) {
                 const tetherAddres = await tetherData.address;
                 setContractData(prev => ({
@@ -59,17 +61,46 @@ export const useWeb3 = () => {
             } else {
                 console.error("Address not found for the specified network:", network);
             }
+
+            if (rwdData && rwdData.address) {
+                const rwdAddres = await rwdData.address;
+                setContractData(prev => ({
+                    ...prev,
+                    rwd: {address: rwdAddres, abi: RWD.abi}
+                }))
+            } else {
+                console.error("Address not found for the specified network:", network);
+            }
+
+            if (decentralBankData && decentralBankData.address) {
+                const dbAddres = await decentralBankData.address;
+                setContractData(prev => ({
+                    ...prev,
+                    decentralBank: {address: dbAddres, abi: DB.abi}
+                }))
+            } else {
+                console.error("Address not found for the specified network:", network);
+            }
         }
     };
     
     const loadMethodData = async () => {
         const tether = new web3.eth.Contract(contractData.tether.abi, contractData.tether.address);
-        console.log(tether);
+        const db = new web3.eth.Contract(contractData.decentralBank.abi, contractData.decentralBank.address)
         if (tether.methods.balanceOf) {
             const tetherBalance = await tether.methods.balanceOf(account).call();
             setContractBalance(prev => ({
                 ...prev,
                 tether: {balance: tetherBalance }
+            }))
+        } else {
+            console.error('Method balanceOf not found in the contract ABI');
+        }
+        if (db.methods.stakingBalance) {
+            const stakingBalance = await db.methods.stakingBalance(account).call(); 
+            setContractBalance(prev => ({
+                ...prev,
+                rwd: {balance: stakingBalance }
             }))
         } else {
             console.error('Method balanceOf not found in the contract ABI');

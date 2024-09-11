@@ -106,7 +106,9 @@ export default function App() {
     return (
         <>
         <Navbar accounts={account} balance={balance} connect={connect} network={network} onConnect={onConnect}/>
-        <p style={{marginTop: 50}}>Tether Balance: {contractData.tether.address} and {contractBalannce.tether.balance}</p>
+            <p style={{marginTop: 50}}>Tether Balance: {contractData.tether.address} and {contractBalannce.tether.balance}</p>
+            <p style={{marginTop: 50}}>RWD Balance: {contractData.rwd.address} and баланс токенов acc2 которые он застейкал {contractBalannce.rwd.balance}</p>
+            <p style={{marginTop: 50}}>RWD Balance: {contractData.decentralBank.address} and {contractBalannce.decentralBank.balance}</p>
         </>
     );
 }
