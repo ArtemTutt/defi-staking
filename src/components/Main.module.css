@@ -1,0 +1,73 @@
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f4f8;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.form_container {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    width: 800px;
+}
+
+.currency_label {
+    font-size: 18px;
+    margin: 5px 0;
+    color: #4a4a4a;
+}
+
+.input_field {
+    width: 100%;
+    padding: 10px;
+    margin: 15px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.button_container {
+    justify-content: space-between;
+}
+
+.btn {
+    background-color: #003366;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+.deposit {
+    background-color: #28a745;
+}
+
+.deposit:hover {
+    background-color: #218838;
+}
+
+.withdraw {
+    background-color: #dc3545;
+}
+
+.withdraw:hover {
+    background-color: #c82333;
+}

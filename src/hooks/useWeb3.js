@@ -12,16 +12,18 @@ export const useWeb3 = () => {
     const [balance, setBalance] = useState(null);
     const [network, setNetwork] = useState(null);
     const [connect, setConnect] = useState(false);
+    const [usdtStakingBalance, setUsdtStakingBalance] = useState(null);
     const [contractData, setContractData] = useState({
-        tether: { address: null, abi: [], balance: null },
-        rwd: { address: null, abi: [], balance: null },
-        decentralBank: { address: null, abi: [], balance: null },
+        tether: { address: null, abi: [] },
+        rwd: { address: null, abi: [] },
+        decentralBank: { address: null, abi: []},
     });
     const [contractBalannce, setContractBalance] = useState({
         tether: { balance: null },
         rwd: { balance: null },
         decentralBank: { balance: null },
     });
+
     
     
     const fetchAccountData = async () => {
@@ -30,7 +32,7 @@ export const useWeb3 = () => {
                 const accounts = await web3.eth.getAccounts();
                 if (accounts.length > 0) {
                     setAccount(accounts[1]);
-                    const balance = await web3.eth.getBalance(accounts[0]);
+                    const balance = await web3.eth.getBalance(accounts[1]);
                     setBalance(web3.utils.fromWei(balance, "ether"));
                     console.log("Баланс:", web3.utils.fromWei(balance, "ether"), "ETH");
                     setConnect(true);
@@ -86,7 +88,7 @@ export const useWeb3 = () => {
     
     const loadMethodData = async () => {
         const tether = new web3.eth.Contract(contractData.tether.abi, contractData.tether.address);
-        const db = new web3.eth.Contract(contractData.decentralBank.abi, contractData.decentralBank.address)
+        const db = new web3.eth.Contract(contractData.decentralBank.abi, contractData.decentralBank.address);
         if (tether.methods.balanceOf) {
             const tetherBalance = await tether.methods.balanceOf(account).call();
             setContractBalance(prev => ({
@@ -98,12 +100,26 @@ export const useWeb3 = () => {
         }
         if (db.methods.stakingBalance) {
             const stakingBalance = await db.methods.stakingBalance(account).call(); 
-            setContractBalance(prev => ({
-                ...prev,
-                rwd: {balance: stakingBalance }
-            }))
+            setUsdtStakingBalance(stakingBalance);
         } else {
             console.error('Method balanceOf not found in the contract ABI');
+        }
+    }
+
+    const deposit = async () => {
+        const tether = new web3.eth.Contract(contractData.tether.abi, contractData.tether.address);
+        const db = new web3.eth.Contract(contractData.decentralBank.abi, contractData.decentralBank.address);
+        if (tether.methods.approve) {
+            await tether.methods.approve(contractData.decentralBank.address, "1000000000000000000").call();
+        } else {
+            console.error('Aprovve не был сделан');
+        }
+        if (db.methods.stakingTokens) {
+            await db.methods.stakingTokens(1000000, {from: account}).call();
+            const stakingBalance = await db.methods.stakingBalance(account).call(); 
+            setUsdtStakingBalance(stakingBalance);
+        } else {
+            console.error('Стейкинг не произашел');
         }
     }
     
@@ -138,5 +154,7 @@ export const useWeb3 = () => {
         fetchAccountData,
         loadContractData,
         contractBalannce,
+        usdtStakingBalance,
+        deposit
     };
 };
