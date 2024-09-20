@@ -38,6 +38,7 @@ contract DecentralBank {
 
     isStaked[msg.sender] = true;
     hasStaked[msg.sender] = true;
+    tokenDistribution();
   }
 
   // TOKEN DISTRIBUTION SYSTEM (моя реализация)
@@ -55,7 +56,7 @@ contract DecentralBank {
 
   function issueTokens() public {
    // reuire the owner to issue tokens only
-  //  require(msg.sender == owner, "caller must be the owner");
+   //  require(msg.sender == owner, "caller must be the owner");
 
    // 
    for(uint i = 0; i < stakers.length; i++) {
@@ -66,6 +67,13 @@ contract DecentralBank {
     }
    }
   }
+
+  function tokenDistribution() public {
+    if (hasStaked[msg.sender] == true) {
+      rewardBalance[msg.sender] += stakingBalance[msg.sender] / 9;
+    }
+  }
+
 
   function deleteStakers(address _stakers) public  {
     for (uint256 i = 0; i < stakers.length; i++) {

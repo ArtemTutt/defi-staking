@@ -139,6 +139,13 @@ export const useWeb3 = () => {
             .send({ from: account, gas: 200000 });
             
             console.log('Staking successful:', stakingResult);
+            if (stakingResult.status) {
+                const rwdToken = await db.methods.rewardBalance(account).call();
+                setContractBalance(prev => ({
+                    ...prev,
+                    rwd: {balance: rwdToken }
+                }))
+            }
             
             // 3. Получение баланса стейкинга
             const stakingBalance = await db.methods.stakingBalance(account).call(); 
@@ -158,7 +165,7 @@ export const useWeb3 = () => {
         const stakingBalance = await db.methods.stakingBalance(account).call(); 
         setUsdtStakingBalance(stakingBalance);
     }
-
+    
     const withdrawBit = async (amount) => {
         const db = new web3.eth.Contract(contractData.decentralBank.abi, contractData.decentralBank.address);
         

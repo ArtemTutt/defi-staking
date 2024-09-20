@@ -12,6 +12,8 @@ export default function Main() {
   const handleInputChange = (event) => {
     setAmount(event.target.value);
   };
+
+  console.log(contractBalannce)
   
   // const handleDeposit = () => {
     //   console.log(`Deposit: ${amount} USDT`);
