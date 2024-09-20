@@ -23,7 +23,7 @@ export const useWeb3 = () => {
         rwd: { balance: null },
         decentralBank: { balance: null },
     });
-
+    
     
     
     const fetchAccountData = async () => {
@@ -63,7 +63,7 @@ export const useWeb3 = () => {
             } else {
                 console.error("Address not found for the specified network:", network);
             }
-
+            
             if (rwdData && rwdData.address) {
                 const rwdAddres = await rwdData.address;
                 setContractData(prev => ({
@@ -73,7 +73,7 @@ export const useWeb3 = () => {
             } else {
                 console.error("Address not found for the specified network:", network);
             }
-
+            
             if (decentralBankData && decentralBankData.address) {
                 const dbAddres = await decentralBankData.address;
                 setContractData(prev => ({
@@ -105,22 +105,68 @@ export const useWeb3 = () => {
             console.error('Method balanceOf not found in the contract ABI');
         }
     }
-
-    const deposit = async () => {
-        const tether = new web3.eth.Contract(contractData.tether.abi, contractData.tether.address);
-        const db = new web3.eth.Contract(contractData.decentralBank.abi, contractData.decentralBank.address);
-        if (tether.methods.approve) {
-            await tether.methods.approve(contractData.decentralBank.address, "1000000000000000000").call();
-        } else {
-            console.error('Aprovve не был сделан');
-        }
-        if (db.methods.stakingTokens) {
-            await db.methods.stakingTokens(1000000, {from: account}).call();
+    
+    // const deposit = async () => {
+        //     const tether = new web3.eth.Contract(contractData.tether.abi, contractData.tether.address);
+    //     const db = new web3.eth.Contract(contractData.decentralBank.abi, contractData.decentralBank.address);
+    //     if (tether.methods.approve) {
+    //         await tether.methods.approve(contractData.decentralBank.address, "1000000000000000000").send({ from: account });
+    //     } else {
+    //         console.error('Aprovve не был сделан');
+    //     }
+    //     if (db.methods.stakingTokens) {
+    //         await db.methods.stakingTokens(1000000, {from: account}).call();
+    //         const stakingBalance = await db.methods.stakingBalance(account).call(); 
+    //         setUsdtStakingBalance(stakingBalance);
+    //     } else {
+    //         console.error('Стейкинг не произашел');
+    //     }
+    // }
+    
+    const deposit = async (amount) => {
+        try {
+            const tether = new web3.eth.Contract(contractData.tether.abi, contractData.tether.address);
+            const db = new web3.eth.Contract(contractData.decentralBank.abi, contractData.decentralBank.address);
+            
+            // 1. Вызов approve
+            const approveResult = await tether.methods.approve(contractData.decentralBank.address, "1000000000000000000")
+            .send({ from: account });
+            
+            console.log('Approve successful:', approveResult);
+            
+            // 2. Вызов stakingTokens
+            const stakingResult = await db.methods.stakingTokens(amount)
+            .send({ from: account, gas: 200000 });
+            
+            console.log('Staking successful:', stakingResult);
+            
+            // 3. Получение баланса стейкинга
             const stakingBalance = await db.methods.stakingBalance(account).call(); 
             setUsdtStakingBalance(stakingBalance);
-        } else {
-            console.error('Стейкинг не произашел');
+        } catch (error) {
+            console.error('Error during deposit:', error);
         }
+    }
+    
+    
+    const withdraw = async () => {
+        const db = new web3.eth.Contract(contractData.decentralBank.abi, contractData.decentralBank.address);
+        
+        const withdrawResult = await db.methods.unStakingTokensAll().send({ from: account, gas: 200000 });
+        console.log('Withdraw successful:', withdrawResult);
+        
+        const stakingBalance = await db.methods.stakingBalance(account).call(); 
+        setUsdtStakingBalance(stakingBalance);
+    }
+
+    const withdrawBit = async (amount) => {
+        const db = new web3.eth.Contract(contractData.decentralBank.abi, contractData.decentralBank.address);
+        
+        const withdrawResult = await db.methods.unStakingTokens(amount).send({ from: account, gas: 200000 });
+        console.log('Withdraw successful:', withdrawResult);
+        
+        const stakingBalance = await db.methods.stakingBalance(account).call(); 
+        setUsdtStakingBalance(stakingBalance);
     }
     
     
@@ -145,6 +191,12 @@ export const useWeb3 = () => {
         }
     }, [contractData]); 
     
+    useEffect(() => {
+        if (contractData.tether.abi && contractData.tether.address) {
+            loadMethodData(); 
+        }
+    }, [usdtStakingBalance]); 
+    
     return {
         account,
         balance,
@@ -155,6 +207,8 @@ export const useWeb3 = () => {
         loadContractData,
         contractBalannce,
         usdtStakingBalance,
-        deposit
+        deposit,
+        withdraw,
+        withdrawBit
     };
 };
