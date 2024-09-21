@@ -12035,12 +12035,12 @@
         }
       },
       "links": {},
-      "address": "0xDf6f13b85Fd37E1e3348d5597401E28Ab83E1cf6",
-      "transactionHash": "0x65658b7bb5288ae883d70c56751157f24830149527260c55a30ed034787c3c39"
+      "address": "0xC769Cbd8aE7d895d8Ff8109414B0F7470168D079",
+      "transactionHash": "0x89dff0ad07bcd78600a0dcba9a986e95bc76cab564746ac1684523f5c786ef05"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2024-09-20T13:38:36.221Z",
+  "updatedAt": "2024-09-21T07:35:24.689Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

@@ -3,17 +3,25 @@ import React, { useState } from "react";
 import bankPng from "../image.svg";
 import s from "./Main.module.css";
 import Web3 from "web3";
-import { useWeb3 } from '../hooks/useWeb3';
+import MyError from "./MyError";
+import { useWeb3 } from "../hooks/useWeb3";
 
 export default function Main() {
   const [amount, setAmount] = useState(0);
-  const {contractBalannce, usdtStakingBalance, deposit, withdraw, withdrawBit} = useWeb3();
+  const [error, setError] = useState(false);
+  const {
+    contractBalannce,
+    usdtStakingBalance,
+    deposit,
+    withdraw,
+    withdrawBit,
+  } = useWeb3();
   
   const handleInputChange = (event) => {
     setAmount(event.target.value);
   };
-
-  console.log(contractBalannce)
+  
+  // console.log(contractBalannce.rwd.balance);
   
   // const handleDeposit = () => {
     //   console.log(`Deposit: ${amount} USDT`);
@@ -26,33 +34,33 @@ export default function Main() {
   const depostiToken = (asdf) => {
     deposit(asdf);
     setAmount(0);
-    console.log("Я передаю значение в useWeb3", asdf)
-  }
-  
-  
+    console.log("Я передаю значение в useWeb3", asdf);
+  };
   
   const withdrawTokenAll = () => {
     withdraw();
     setAmount(0);
-  }
-
-  const withdrawTokenBit = (asdf) => {
-    withdrawBit(asdf);
+  };
+  
+  const withdrawTokenBit = (asdf, setError) => {
+    withdrawBit(asdf, setError);
     setAmount(0);
-  }
+  };
   
   return (
     <div className={s.container}>
     <div className={s.form_container}>
     <p>Ваш общий баланс USDT: {contractBalannce.tether.balance}</p>
-    <div style={{ display: "flex", justifyContent: 'space-around' }}>
+    <div style={{ display: "flex", justifyContent: "space-around" }}>
     <div>
     <h2>Staking Balance</h2>
     <p className={s.currency_label}>USDT: {usdtStakingBalance} </p>
     </div>
     <div>
     <h2>Reward Balance</h2>
-    <p className={s.currency_label}>RWD: {contractBalannce.rwd.balance}</p>
+    <p className={s.currency_label}>
+    RWD: {contractBalannce.rwd.balance}
+    </p>
     </div>
     </div>
     <input
@@ -62,15 +70,36 @@ export default function Main() {
     placeholder="Введите количество монет..."
     className={s.input_field}
     />
-    <div> 
-    <button style={{width: "100%", marginBottom: 10}} className={s.btn} onClick={() => depostiToken(amount)}>Deposit</button>
+    <div>
+    <button
+    style={{ width: "100%", marginBottom: 10 }}
+    className={s.btn}
+    onClick={() => depostiToken(amount)}
+    >
+    Deposit
+    </button>
     </div>
-    <div style={{display: "flex", justifyContent: "space-between"}}>
-    <button style={{width: "48%", marginBottom: 10}} className={s.btn} onClick={() => withdrawTokenAll()}>Withdraw All</button>
-    <button style={{width: "48%", marginBottom: 10}} className={s.btn} onClick={() => withdrawTokenBit(amount)}>Withdraw</button>
+    <div style={{ display: "flex", justifyContent: "space-between" }}>
+    <button
+    style={{ width: "48%", marginBottom: 10 }}
+    className={s.btn}
+    onClick={() => withdrawTokenAll()}
+    >
+    Withdraw All
+    </button>
+    <button
+    style={{ width: "48%", marginBottom: 10 }}
+    className={s.btn}
+    onClick={() => withdrawTokenBit(amount, setError)}
+    >
+    Withdraw
+    </button>
     </div>
-    <span style={{color: "blue"}}>AIRDROP</span>
+    <span style={{ color: "blue" }}>AIRDROP</span>
     </div>
+    {
+      error && <MyError>Ошибка отправки: Нельзя вывести сумму меньше нуля</MyError>
+    }
     </div>
   );
 }

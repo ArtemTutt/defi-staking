@@ -141,6 +141,7 @@ export const useWeb3 = () => {
             console.log('Staking successful:', stakingResult);
             if (stakingResult.status) {
                 const rwdToken = await db.methods.rewardBalance(account).call();
+                console.log('Rwd token:', rwdToken);
                 setContractBalance(prev => ({
                     ...prev,
                     rwd: {balance: rwdToken }
@@ -166,11 +167,18 @@ export const useWeb3 = () => {
         setUsdtStakingBalance(stakingBalance);
     }
     
-    const withdrawBit = async (amount) => {
+    const withdrawBit = async (amount, setError) => {
         const db = new web3.eth.Contract(contractData.decentralBank.abi, contractData.decentralBank.address);
         
-        const withdrawResult = await db.methods.unStakingTokens(amount).send({ from: account, gas: 200000 });
-        console.log('Withdraw successful:', withdrawResult);
+        if (amount !== 0) {
+            const withdrawResult = await db.methods.unStakingTokens(amount).send({ from: account, gas: 200000 });
+            console.log('Withdraw successful:', withdrawResult);
+        } else {
+            setError(true);
+            setTimeout(() => {
+                setError(false);
+            }, 3000)
+        }
         
         const stakingBalance = await db.methods.stakingBalance(account).call(); 
         setUsdtStakingBalance(stakingBalance);
