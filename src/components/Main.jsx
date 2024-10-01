@@ -31,8 +31,8 @@ export default function Main() {
     //   console.log(`Withdraw: ${amount} RWD`);
   // };
   
-  const depostiToken = (asdf) => {
-    deposit(asdf);
+  const depostiToken = (asdf, setError) => {
+    deposit(asdf, setError);
     setAmount(0);
     console.log("Я передаю значение в useWeb3", asdf);
   };
@@ -46,6 +46,10 @@ export default function Main() {
     withdrawBit(asdf, setError);
     setAmount(0);
   };
+  
+  const giveMeMyDrop = () => {
+    alert(`Вы можете забрать свой дроп в размере ${contractBalannce.rwd.balance}`)
+  }
   
   return (
     <div className={s.container}>
@@ -74,7 +78,7 @@ export default function Main() {
     <button
     style={{ width: "100%", marginBottom: 10 }}
     className={s.btn}
-    onClick={() => depostiToken(amount)}
+    onClick={() => depostiToken(amount, setError)}
     >
     Deposit
     </button>
@@ -95,11 +99,13 @@ export default function Main() {
     Withdraw
     </button>
     </div>
-    <span style={{ color: "blue" }}>AIRDROP</span>
+    <button onClick={() => giveMeMyDrop()} style={{ color: "white", backgroundColor: "red" }}>AIRDROP</button>
     </div>
-    {
-      error && <MyError>Ошибка отправки: Нельзя вывести сумму меньше нуля</MyError>
-    }
+    {error && (
+      <MyError>
+      Ошибка отправки: Нельзя вывести или положить сумму меньше нуля
+      </MyError>
+    )}
     </div>
   );
 }

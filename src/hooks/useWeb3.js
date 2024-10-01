@@ -99,7 +99,12 @@ export const useWeb3 = () => {
             console.error('Method balanceOf not found in the contract ABI');
         }
         if (db.methods.stakingBalance) {
-            const stakingBalance = await db.methods.stakingBalance(account).call(); 
+            const stakingBalance = await db.methods.stakingBalance(account).call();
+            const rwdToken = await db.methods.rewardBalance(account).call();
+            setContractBalance(prev => ({
+                ...prev,
+                rwd: {balance: rwdToken }
+            }))
             setUsdtStakingBalance(stakingBalance);
         } else {
             console.error('Method balanceOf not found in the contract ABI');
@@ -123,7 +128,7 @@ export const useWeb3 = () => {
     //     }
     // }
     
-    const deposit = async (amount) => {
+    const deposit = async (amount, setError) => {
         try {
             const tether = new web3.eth.Contract(contractData.tether.abi, contractData.tether.address);
             const db = new web3.eth.Contract(contractData.decentralBank.abi, contractData.decentralBank.address);
@@ -135,8 +140,17 @@ export const useWeb3 = () => {
             console.log('Approve successful:', approveResult);
             
             // 2. Вызов stakingTokens
-            const stakingResult = await db.methods.stakingTokens(amount)
-            .send({ from: account, gas: 200000 });
+            
+            let stakingResult;
+            if (amount !== 0) {
+                stakingResult = await db.methods.stakingTokens(amount)
+                .send({ from: account, gas: 200000 });
+            } else {
+                setError(true);
+                setTimeout(() => {
+                    setError(false);
+                }, 3000)
+            }
             
             console.log('Staking successful:', stakingResult);
             if (stakingResult.status) {
@@ -210,7 +224,7 @@ export const useWeb3 = () => {
         if (contractData.tether.abi && contractData.tether.address) {
             loadMethodData(); 
         }
-    }, [usdtStakingBalance]); 
+    }, [usdtStakingBalance, contractBalannce.rwd.balance]); 
     
     return {
         account,

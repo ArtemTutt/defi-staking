@@ -25,4 +25,3 @@ module.exports = async function(deployer, network, accounts) {
   // Transfer 100 mock Tether tokens to investors
   await tether.transfer(accounts[1], 1000000000000000000n);
 };
- 
