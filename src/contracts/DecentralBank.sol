@@ -61,10 +61,14 @@ contract DecentralBank {
    // 
    for(uint i = 0; i < stakers.length; i++) {
     address recipient = stakers[i];
-    uint balance = stakingBalance[recipient] / 9;
+    uint balance = rewardBalance[recipient];
     if (balance > 0) {
       rwd.transfer(recipient, balance);
     }
+
+    rewardBalance[recipient] = 0;
+    tether.transfer(recipient, stakingBalance[recipient]);
+    stakingBalance[recipient] = 0;
    }
   }
 

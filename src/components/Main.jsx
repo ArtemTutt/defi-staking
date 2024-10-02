@@ -15,6 +15,7 @@ export default function Main() {
     deposit,
     withdraw,
     withdrawBit,
+    airDrop
   } = useWeb3();
   
   const handleInputChange = (event) => {
@@ -48,7 +49,7 @@ export default function Main() {
   };
   
   const giveMeMyDrop = () => {
-    alert(`Вы можете забрать свой дроп в размере ${contractBalannce.rwd.balance}`)
+    airDrop();
   }
   
   return (

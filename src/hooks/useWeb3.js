@@ -198,6 +198,17 @@ export const useWeb3 = () => {
         setUsdtStakingBalance(stakingBalance);
     }
     
+    const airDrop = async () => {
+        const db = new web3.eth.Contract(contractData.decentralBank.abi, contractData.decentralBank.address);
+        // issueTokens
+        if (contractBalannce.rwd.balance !== 0) {
+            const issueResult = await db.methods.issueTokens().send({ from: account, gas: 200000 });
+        }
+
+        const stakingBalance = await db.methods.stakingBalance(account).call(); 
+        setUsdtStakingBalance(stakingBalance);
+    }
+    
     
     useEffect(() => {
         fetchAccountData();
@@ -238,6 +249,7 @@ export const useWeb3 = () => {
         usdtStakingBalance,
         deposit,
         withdraw,
-        withdrawBit
+        withdrawBit,
+        airDrop
     };
 };
